@@ -108,3 +108,45 @@ Because this is a static front-end project, you can run it in any of the followi
 ## Summary
 
 This project demonstrates a practical front-end CRUD workflow using JavaScript and browser storage. It is small, fast, and easy to understand, making it a strong example of how a simple product management system can be built without a backend.
+
+
+
+# 🚀 JavaScript Learning Roadmap
+
+> My progress while learning JavaScript and building practical projects.
+
+## 📚 Learning Progress
+
+| Topic | Status |
+|---|---|
+| 🟢 JavaScript Basics | ✅ Completed |
+| 🟢 Arrays & Objects | ✅ Completed |
+| 🟢 DOM | ✅ Completed |
+| 🟢 Events | ✅ Completed |
+| 🟢 CRUD | ✅ Completed |
+| 🟢 Local Storage | ✅ Completed |
+| 🟢 Search | ✅ Completed |
+| 🟢 Sorting | ✅ Completed |
+| 🟢 Filter | ✅ Completed |
+| 🟡 Pagination | 🔄 In Progress |
+| ⚪ Promises | ⬜ Not Started |
+| ⚪ Async / Await | ⬜ Not Started |
+| ⚪ Fetch API | ⬜ Not Started |
+| ⚪ API CRUD | ⬜ Not Started |
+
+---
+
+## 🎯 Next Steps
+
+```text
+Pagination
+    ↓
+Promises
+    ↓
+Async / Await
+    ↓
+Fetch API
+    ↓
+API CRUD
+    ↓
+Real Projects
