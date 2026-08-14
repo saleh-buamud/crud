@@ -20,6 +20,7 @@
 <body>
     <div class="con-btn-dele">
         <button onclick="clearAll()">Delete All</button>
+        <button onclick="ResetAll()">Reset</button>
     </div>
     <div class="container">
 
@@ -92,6 +93,15 @@
                 <button type="button" class="btn" onclick="filterByPrice()">
                     Filter
                 </button>
+                <div class="pagination">
+                    <button type="button" onclick="previousPage()" class="pagination-btn" id="previousBtn">
+                        Previous
+                    </button>
+
+                    <button type="button" onclick="nextPage()" class="pagination-btn" id="nextBtn">
+                        Next
+                    </button>
+                </div>
 
             </form>
 
@@ -106,27 +116,29 @@
 
             <h2>Products List</h2>
 
-            <table>
+            <div class="table-wrapper">
+                <table>
 
-                <thead>
+                    <thead>
 
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Description</th>
+                            <th>Edit</th>
+                        </tr>
 
-                </thead>
+                    </thead>
 
-                <tbody id="tableBody">
+                    <tbody id="tableBody">
 
-                    <!-- JS -->
+                        <!-- JS -->
 
-                </tbody>
+                    </tbody>
 
-            </table>
+                </table>
+            </div>
 
         </div>
 

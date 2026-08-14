@@ -90,18 +90,70 @@ let products = JSON.parse(localStorage.getItem("products")) || [
         description: "Portable power bank with fast charging support"
     }
 ];
+
+
 let productName = document.getElementById("productName");
 let productPrice = document.getElementById("productPrice");
 let productDescription = document.getElementById("productDescription");
 let searchInput = document.getElementById("searchInput");
 let tableBody = document.getElementById("tableBody");
 let addBtn = document.getElementById("addBtn");
+let currentPage = 1;
+let productsPerPage = 5;
+let currentId = null;
 
-let currentIndex = -1;
+function displayPagination() {
 
+    let startIndex = (currentPage - 1) * productsPerPage;
+    let endIndex = startIndex + productsPerPage;
+
+    let currentProducts = products.slice(startIndex, endIndex);
+
+    displayData(currentProducts);
+
+    updatePaginationButtons();
+}
+
+
+function nextPage() {
+
+    let totalPages = Math.ceil(products.length / productsPerPage);
+
+    if (currentPage < totalPages) {
+
+        currentPage++;
+
+        displayPagination();
+    }
+}
+
+
+function previousPage() {
+
+    if (currentPage > 1) {
+
+        currentPage--;
+
+        displayPagination();
+    }
+}
+
+
+function updatePaginationButtons() {
+
+    let totalPages = Math.ceil(
+        products.length / productsPerPage
+    );
+
+    let previousBtn = document.getElementById("previousBtn");
+    let nextBtn = document.getElementById("nextBtn");
+
+    previousBtn.disabled = currentPage === 1;
+
+    nextBtn.disabled = currentPage === totalPages;
+}
 displayData();
 // sortProductprice()
-sortProductname();
 
 // ==========================
 // Add / Update Button
@@ -109,7 +161,7 @@ sortProductname();
 
 addBtn.addEventListener("click", function () {
 
-    if (currentIndex === -1) {
+    if (currentId === null) {
         addProduct();
     }
     else {
@@ -199,7 +251,7 @@ function clearAll() {
 
     localStorage.removeItem("products");
 
-    currentIndex = -1;
+    currentId = null;
 
     addBtn.innerHTML = "Add Product";
 
@@ -223,15 +275,10 @@ function addProduct() {
     }
 
     let product = {
-
         id: Date.now(),
-
         name: productName.value.trim(),
-
         price: Number(productPrice.value),
-
         description: productDescription.value.trim()
-
     };
 
     products.push(product);
@@ -241,14 +288,12 @@ function addProduct() {
         JSON.stringify(products)
     );
 
-    displayData();
+    displayPagination();
 
     clearForm();
 
     alert("Product added successfully");
-
 }
-
 
 // ==========================
 // Display Products
@@ -256,43 +301,40 @@ function addProduct() {
 
 function displayData() {
 
+    let startIndex = (currentPage - 1) * productsPerPage;
+
+    let endIndex = startIndex + productsPerPage;
+
+    let currentProducts = products.slice(startIndex, endIndex);
+
     let tr = "";
 
-    for (let i = 0; i < products.length; i++) {
+    for (let i = 0; i < currentProducts.length; i++) {
 
         tr += `
-        <tr>
+            <tr>
+                <td>${currentProducts[i].id}</td>
+                <td>${currentProducts[i].name}</td>
+                <td>${currentProducts[i].price}</td>
+                <td>${currentProducts[i].description}</td>
 
-            <td>${products[i].id}</td>
-
-            <td>${products[i].name}</td>
-
-            <td>${products[i].price}</td>
-
-            <td>${products[i].description}</td>
-
-            <td>
-
-                <button
-                    class="btn btn-primary"
-                    onclick="editProduct(${products[i].id})">
-                    Edit
-                </button>
-
-                <button
-                    class="btn btn-primary"
-                    onclick="deleteProduct(${products[i].id})">
-                    Delete
-                </button>
-
-            </td>
-
-        </tr>
+                <td>
+                    <button 
+                        class="btn btn-primary"
+                        onclick="editProduct(${currentProducts[i].id})">
+                        Edit
+                    </button>
+                    <button
+                        class="btn btn-danger"
+                        onclick="deleteProduct(${currentProducts[i].id})">
+                        Delete
+                    </button>
+                </td>
+            </tr>
         `;
     }
 
     tableBody.innerHTML = tr;
-
 }
 
 
@@ -341,26 +383,22 @@ function deleteProduct(id) {
 
 function editProduct(id) {
 
-    for (let i = 0; i < products.length; i++) {
+    let product = products.find(function (product) {
+        return product.id === id;
+    });
 
-        if (products[i].id === id) {
-
-            productName.value = products[i].name;
-
-            productPrice.value = products[i].price;
-
-            productDescription.value = products[i].description;
-
-            currentIndex = i;
-
-            addBtn.innerHTML = "Update Product";
-
-            break;
-        }
+    if (!product) {
+        return;
     }
 
-}
+    productName.value = product.name;
+    productPrice.value = product.price;
+    productDescription.value = product.description;
 
+    currentId = id;
+
+    addBtn.innerHTML = "Update Product";
+}
 
 // ==========================
 // Update Product
@@ -372,30 +410,32 @@ function updateProduct() {
         return;
     }
 
-    products[currentIndex].name =
-        productName.value.trim();
+    let product = products.find(function (product) {
+        return product.id === currentId;
+    });
 
-    products[currentIndex].price =
-        Number(productPrice.value);
+    if (!product) {
+        return;
+    }
 
-    products[currentIndex].description =
-        productDescription.value.trim();
+    product.name = productName.value.trim();
+    product.price = Number(productPrice.value);
+    product.description = productDescription.value.trim();
 
     localStorage.setItem(
         "products",
         JSON.stringify(products)
     );
 
-    currentIndex = -1;
+    currentId = null;
 
     addBtn.innerHTML = "Add Product";
 
     clearForm();
 
-    displayData();
+    displayPagination();
 
     alert("Product updated successfully");
-
 }
 
 
@@ -432,7 +472,7 @@ function searchProduct() {
 
         tableBody.innerHTML = `
             <tr>
-                <td colspan="5">
+                <td colspan="4">
                     Product Not Found
                 </td>
             </tr>
@@ -463,9 +503,8 @@ function searchProduct() {
                     onclick="editProduct(${p[i].id})">
                     Edit
                 </button>
-
-                <button
-                    class="btn btn-primary"
+                  <button
+                    class="btn btn-danger"
                     onclick="deleteProduct(${p[i].id})">
                     Delete
                 </button>
@@ -588,10 +627,24 @@ function resulFillter(filteredProducts) {
                 <td>${filteredProducts[i].description}</td>
                 <td>
                     <button class="btn btn-primary" onclick="editProduct(${filteredProducts[i].id})">Edit</button>
-                    <button class="btn btn-primary" onclick="deleteProduct(${filteredProducts[i].id})">Delete</button>
+                    <button class="btn btn-danger" onclick="deleteProduct(${filteredProducts[i].id})">Delete</button>
                 </td>
             </tr>
         `;
     }
 
+}
+
+function ResetAll() {
+    localStorage.removeItem("products");
+    products = [];
+    document.getElementById("minPrice").value = "";
+    document.getElementById("maxPrice").value = "";
+    document.getElementById("sortSelect").value = "";
+    document.getElementById("searchInput").value = "";
+    displayData();
+    clearForm();
+    currentIndex = -1;
+    addBtn.innerHTML = "Add Product";
+    alert("All products have been reset");
 }
