@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts Management</title>
+    <link rel="stylesheet" href="crud-api.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <main class="dashboard-shell">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Content workspace</p>
+                <div class="title-row">
+                    <h1>Posts Management</h1>
+                    <span class="count-badge" id="postsCount">0 Posts</span>
+                </div>
+                <p class="page-subtitle">Create, edit and manage your posts easily.</p>
+            </div>
+            <div class="header-mark" aria-hidden="true"><i class="fa-solid fa-chart-simple"></i></div>
+        </header>
+
+        <section class="dashboard-card form-card" aria-labelledby="formTitle">
+            <div class="card-heading">
+                <div>
+                    <p class="section-kicker">Workspace</p>
+                    <h2 id="formTitle">Post details</h2>
+                </div>
+                <span class="mode-label" id="formMode">New post</span>
+            </div>
+
+            <form id="postForm">
+                <div class="field-group">
+                    <label for="userId">User ID</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user input-icon" aria-hidden="true"></i>
+                        <input type="number" id="userId" name="userId" placeholder="Enter User ID" min="1" required
+                            aria-describedby="userIdError">
+                        <i class="validation-icon" aria-hidden="true"></i>
+                    </div>
+                    <span class="field-error" id="userIdError" aria-live="polite"></span>
+                </div>
+
+                <div class="field-group">
+                    <label for="title">Title</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-heading input-icon" aria-hidden="true"></i>
+                        <input type="text" id="title" name="title" placeholder="Enter a post title" minlength="3"
+                            required aria-describedby="titleError">
+                        <i class="validation-icon" aria-hidden="true"></i>
+                    </div>
+                    <span class="field-error" id="titleError" aria-live="polite"></span>
+                </div>
+
+                <div class="field-group field-group-wide">
+                    <label for="body">Body</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-file-lines input-icon" aria-hidden="true"></i>
+                        <textarea id="body" name="body" placeholder="Write your post content..." rows="4" minlength="5"
+                            required aria-describedby="bodyError"></textarea>
+                        <i class="validation-icon" aria-hidden="true"></i>
+                    </div>
+                    <span class="field-error" id="bodyError" aria-live="polite"></span>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="submitBtn" class="button button-primary"><i class="fa-solid fa-plus"
+                            aria-hidden="true"></i><span>Add Post</span></button>
+                    <button type="button" id="cancelBtn" class="button button-secondary is-hidden"><i
+                            class="fa-solid fa-xmark" aria-hidden="true"></i><span>Cancel</span></button>
+                </div>
+            </form>
+        </section>
+
+        <section class="dashboard-card table-card" aria-labelledby="tableTitle">
+            <div class="card-heading table-heading">
+                <div>
+                    <p class="section-kicker">Content library</p>
+                    <h2 id="tableTitle">All posts</h2>
+                </div>
+                <div class="table-meta"><i class="fa-solid fa-database" aria-hidden="true"></i> Live collection</div>
+            </div>
+
+            <div class="table-toolbar">
+                <label class="search-wrapper" for="searchInput">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    <input type="search" id="searchInput" placeholder="Search by title or content..."
+                        aria-label="Search posts" oninput="searchPost()">
+                </label>
+                <div class="sort-wrapper">
+                    <i class="fa-solid fa-sort sort-icon" aria-hidden="true"></i>
+                    <select id="sortSelect" onchange="sortPosts()" aria-label="Sort posts">
+                        <option value="">Sort Posts</option>
+                        <option value="title-asc">Title A to Z</option>
+                        <option value="title-desc">Title Z to A</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-scroll">
+                <table id="postsTable">
+                    <thead>
+                        <tr>
+                            <th>Post ID</th>
+                            <th>User ID</th>
+                            <th>Title</th>
+                            <th>Body</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="postsTableBody">
+                        <tr class="loading-row">
+                            <td colspan="4"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Loading
+                                posts...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state is-hidden" id="emptyState">
+                <i class="fa-regular fa-folder-open" aria-hidden="true"></i>
+                <strong>No posts found</strong>
+                <span>Try changing your search or add a new post.</span>
+            </div>
+
+            <nav class="pagination" aria-label="Posts pagination">
+                <button id="prevBtn" class="pagination-button"><i class="fa-solid fa-arrow-left"
+                        aria-hidden="true"></i><span>Previous</span></button>
+                <span class="page-indicator" id="pageIndicator">Page 1</span>
+                <button id="nextBtn" class="pagination-button"><span>Next</span><i class="fa-solid fa-arrow-right"
+                        aria-hidden="true"></i></button>
+            </nav>
+        </section>
+    </main>
+
+    <div class="modal-backdrop is-hidden" id="deleteModal" role="dialog" aria-modal="true"
+        aria-labelledby="deleteModalTitle">
+        <div class="confirmation-modal">
+            <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div>
+            <h2 id="deleteModalTitle">Delete Post?</h2>
+            <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button type="button" id="cancelDeleteBtn" class="button button-secondary"><i class="fa-solid fa-xmark"
+                        aria-hidden="true"></i><span>Cancel</span></button>
+                <button type="button" id="confirmDeleteBtn" class="button button-danger"><i class="fa-solid fa-trash"
+                        aria-hidden="true"></i><span>Delete</span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i><span id="toastMessage"></span>
+    </div>
+
+    <script src="crud-api.js"></script>
+</body>
+
+</html>

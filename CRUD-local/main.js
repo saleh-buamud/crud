@@ -227,43 +227,6 @@ function validateForm() {
     return true;
 }
 
-
-// ==========================
-// Clear All
-// ==========================
-
-function clearAll() {
-
-    if (products.length === 0) {
-        alert("There are no products to delete");
-        return;
-    }
-
-    let confirmDelete = confirm(
-        "Are you sure you want to delete ALL products?"
-    );
-
-    if (!confirmDelete) {
-        return;
-    }
-
-    products = [];
-
-    localStorage.removeItem("products");
-
-    currentId = null;
-
-    addBtn.innerHTML = "Add Product";
-
-    clearForm();
-
-    displayData();
-
-    alert("All products have been deleted");
-
-}
-
-
 // ==========================
 // Add Product
 // ==========================

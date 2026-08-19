@@ -397,6 +397,7 @@ tbody td:last-child .btn:last-child:hover {
 tbody td:last-child .btn:last-child:active {
     transform: translateY(0) scale(0.98);
     box-shadow: 0 6px 12px rgba(180, 35, 24, 0.12);
+
 }
 
 tbody td:last-child .btn+.btn {
